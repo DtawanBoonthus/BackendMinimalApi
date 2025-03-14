@@ -1,0 +1,33 @@
+# Build output folders
+/bin/
+/obj/
+
+# Rider IDE files and folders
+.idea/
+*.sln.iml
+
+# User-specific files for Visual Studio and Rider
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code settings folder (if used)
+.vscode/
+
+# NuGet packages (can be restored)
+*.nupkg
+**/packages/
+
+# Node modules folder (if used in the project)
+node_modules/
+
+# Log and temporary files
+*.log
+*.tmp
+
+# Configuration file containing secrets or personal settings (do not commit)
+appsettings.Development.json
+
+# macOS system files (if developing on macOS)
+.DS_Store
