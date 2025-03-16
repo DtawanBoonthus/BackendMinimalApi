@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "ZXPZfnGkwtg8tCX3LNIoExQhe59WYXUlepi/orTvYEc=",
+  "Source": "BackendMinimalApi",
+  "BasePath": "_content/BackendMinimalApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
