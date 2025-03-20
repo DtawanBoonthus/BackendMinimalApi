@@ -17,17 +17,18 @@ public class AuthService(
 
         if (user == null)
         {
-            throw new UnauthorizedAccessException("Invalid credentials");
+            throw new UnauthorizedAccessException("Invalid username or password");
         }
 
         var result = passwordHasher.VerifyHashedPassword(user, user.Password, loginData.Password);
 
         if (result == PasswordVerificationResult.Failed)
         {
-            throw new UnauthorizedAccessException("Invalid credentials");
+            throw new UnauthorizedAccessException("Invalid username or password");
         }
 
         var tokenResult = jwtTokenGenerator.GenerateToken(user);
+        
         return new LoginResult(tokenResult);
     }
     
@@ -37,7 +38,7 @@ public class AuthService(
         
         if (existingUser != null)
         {
-            throw new InvalidOperationException("User already exists");
+            throw new InvalidOperationException("Username already exists");
         }
 
         var newUser = new UserAccount
@@ -48,10 +49,24 @@ public class AuthService(
         
         newUser.Password = passwordHasher.HashPassword(newUser, registerData.Password);
 
-        context.UserAccounts.Add(newUser);
-        await context.SaveChangesAsync();
+        await using var transaction = await context.Database.BeginTransactionAsync();
+
+        try
+        {
+            context.UserAccounts.Add(newUser);
+            await context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            throw new Exception(ex.Message);
+        }
         
-        return new RegisterResult(newUser.UserId, newUser.Username);
+        var tokenResult = jwtTokenGenerator.GenerateToken(newUser);
+        
+        return new RegisterResult(newUser.UserId, newUser.Username, tokenResult);
     }
 
     public Task<string> RefreshTokenAsync(string token)

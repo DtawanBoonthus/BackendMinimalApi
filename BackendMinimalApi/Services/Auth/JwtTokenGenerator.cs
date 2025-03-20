@@ -28,7 +28,6 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        // สร้าง JWT token
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
@@ -38,7 +37,6 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
 
         var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-        // สร้าง refresh token (เป็น string ที่สุ่มขึ้นมา)
         var refreshToken = GenerateRefreshToken();
 
         return new TokenResult(jwtToken, refreshToken);

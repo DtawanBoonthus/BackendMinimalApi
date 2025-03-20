@@ -1,38 +1,32 @@
 using BackendMinimalApi.Endpoints;
+using BackendMinimalApi.Extensions;
 using BackendMinimalApi.Infrastructure.DBContext;
 using BackendMinimalApi.Models.AuthModel;
 using BackendMinimalApi.Services.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region DbContext
+builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis") ?? throw new Exception("Redis is not configured.")));
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AuthConnection")));
-
-#endregion DbContext
-
-#region Inject Services
-
-#region Auth Service
 
 builder.Services.AddScoped<IPasswordHasher<UserAccount>, BCryptPasswordHasher<UserAccount>>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-#endregion Auth Service
+builder.Services.AddJwtBearerAuthentication(builder.Configuration);
 
-#endregion Inject Services
+builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApiDocument(config =>
-{
-    config.DocumentName = "Backend Minimal API";
-    config.Title = "MinimalAPI v1";
-    config.Version = "v1";
-});
+
+builder.Services.AddNSwagOpenApiDocument();
 
 var app = builder.Build();
 
@@ -47,6 +41,11 @@ if (app.Environment.IsDevelopment())
         config.DocExpansion = "list";
     });
 }
+
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapAuth();
 

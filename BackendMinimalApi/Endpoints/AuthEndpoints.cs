@@ -11,10 +11,19 @@ public static class AuthEndpoints
 
         group.MapPost("/login", async (IAuthService authService, RequestLogin loginData) =>
             {
-                var loginResult = await authService.LoginAsync(loginData);
-                return string.IsNullOrEmpty(loginResult.Token.AccessToken)
-                    ? Results.BadRequest(new ResponseError(400, "Login failed"))
-                    : Results.Ok(new ResponseLogin(200, loginResult.Token.AccessToken, loginResult.Token.RefreshToken));
+                try
+                {
+                    var result = await authService.LoginAsync(loginData);
+                    return Results.Ok(new ResponseLogin(200, result.Token.AccessToken, result.Token.RefreshToken));
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    return Results.BadRequest(new ResponseError(400, ex.Message));
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new ResponseError(500, ex.Message));
+                }
             })
             .WithName("Login")
             .WithTags("Auth");
@@ -23,13 +32,17 @@ public static class AuthEndpoints
             {
                 try
                 {
-                    var registerResult = await authService.RegisterAsync(registerData);
-                    return Results.Created($"/auth/{registerResult.UserId}",
-                        new ResponseRegister(201, registerResult.Username));
+                    var result = await authService.RegisterAsync(registerData);
+                    return Results.Ok(new ResponseRegister(200, result.TokenResult.AccessToken,
+                        result.TokenResult.RefreshToken));
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Results.BadRequest(new ResponseError(10001, ex.Message));
                 }
                 catch (Exception ex)
                 {
-                    return Results.BadRequest(new ResponseError(400, ex.Message));
+                    return Results.BadRequest(new ResponseError(500, ex.Message));
                 }
             })
             .WithName("Register")
