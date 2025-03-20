@@ -5,14 +5,13 @@ using BackendMinimalApi.Models.AuthModel;
 using BackendMinimalApi.Services.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(
-    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis") ?? throw new Exception("Redis is not configured.")));
+await builder.Services.AddRedisConnectionAsync(builder.Configuration);
+
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AuthConnection")));
 
