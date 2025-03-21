@@ -4,11 +4,9 @@ namespace BackendMinimalApi.Services.Auth;
 
 public interface IAuthService
 {
-    Task<LoginResult> LoginAsync(RequestLogin loginData);
-    
-    Task<RegisterResult> RegisterAsync(RequestRegister registerData);
-    
-    Task<string> RefreshTokenAsync(string token);
-    
-    Task<bool> RevokeTokenAsync(string token);
+    public Task<LoginResult> LoginAsync(RequestLogin loginData);
+
+    public Task<RegisterResult> RegisterAsync(RequestRegister registerData);
+
+    public Task<TokenResult> RefreshTokenAsync(int userId);
 }

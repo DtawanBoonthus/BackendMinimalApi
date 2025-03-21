@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using StackExchange.Redis;
 
 namespace BackendMinimalApi.Extensions;
 
@@ -18,7 +17,7 @@ public static class ServiceExtensions
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                    configuration.GetValue<string>("Jwt:Issuer") ??
+                    configuration.GetValue<string>("Jwt:Secret") ??
                     throw new Exception("JWT Secret is not configured."))),
                 ValidIssuer = configuration.GetValue<string>("Jwt:Issuer"),
                 ValidAudience = configuration.GetValue<string>("Jwt:Audience"),
@@ -53,15 +52,13 @@ public static class ServiceExtensions
         return services;
     }
 
-    public static async Task<IServiceCollection> AddRedisConnectionAsync(this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddStackExchangeRedis(this IServiceCollection services, IConfiguration configuration)
     {
-        var redisConnectionString = configuration.GetConnectionString("Redis")
-                                    ?? throw new ArgumentException("Redis is not configured.");
-
-        var connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(redisConnectionString);
-
-        services.AddSingleton<IConnectionMultiplexer>(connectionMultiplexer);
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis") ??
+                                    throw new ArgumentException("Redis is not configured.");
+        });
 
         return services;
     }

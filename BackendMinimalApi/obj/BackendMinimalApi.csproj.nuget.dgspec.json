@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\BackendDev\\BackendMinimalApi\\BackendMinimalApi\\BackendMinimalApi.csproj": {}
+    "C:\\Users\\ASUS\\RiderProjects\\BackendMinimalApi\\BackendMinimalApi\\BackendMinimalApi.csproj": {}
   },
   "projects": {
-    "D:\\BackendDev\\BackendMinimalApi\\BackendMinimalApi\\BackendMinimalApi.csproj": {
+    "C:\\Users\\ASUS\\RiderProjects\\BackendMinimalApi\\BackendMinimalApi\\BackendMinimalApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BackendDev\\BackendMinimalApi\\BackendMinimalApi\\BackendMinimalApi.csproj",
+        "projectUniqueName": "C:\\Users\\ASUS\\RiderProjects\\BackendMinimalApi\\BackendMinimalApi\\BackendMinimalApi.csproj",
         "projectName": "BackendMinimalApi",
-        "projectPath": "D:\\BackendDev\\BackendMinimalApi\\BackendMinimalApi\\BackendMinimalApi.csproj",
-        "packagesPath": "C:\\Users\\dtawa\\.nuget\\packages\\",
-        "outputPath": "D:\\BackendDev\\BackendMinimalApi\\BackendMinimalApi\\obj\\",
+        "projectPath": "C:\\Users\\ASUS\\RiderProjects\\BackendMinimalApi\\BackendMinimalApi\\BackendMinimalApi.csproj",
+        "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ASUS\\RiderProjects\\BackendMinimalApi\\BackendMinimalApi\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dtawa\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -42,9 +38,9 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
+          "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net9.0": {
@@ -71,6 +67,10 @@
             "Microsoft.EntityFrameworkCore.InMemory": {
               "target": "Package",
               "version": "[9.0.3, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.2, )"
             },
             "NSwag.AspNetCore": {
               "target": "Package",
@@ -100,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Users\\dtawa\\.dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

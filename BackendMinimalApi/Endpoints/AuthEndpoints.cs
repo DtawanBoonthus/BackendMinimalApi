@@ -9,12 +9,13 @@ public static class AuthEndpoints
     {
         var group = endpoints.MapGroup("/auth");
 
-        group.MapPost("/login", async (IAuthService authService, RequestLogin loginData) =>
+        group.MapPost("/login", async (IAuthService authService, IRefreshTokenService refreshTokenService, RequestLogin loginData) =>
             {
                 try
                 {
                     var result = await authService.LoginAsync(loginData);
-                    return Results.Ok(new ResponseLogin(200, result.Token.AccessToken, result.Token.RefreshToken));
+                    await refreshTokenService.SaveRefreshTokenAsync(new RefreshTokenData(result.UserId, result.TokenResult.RefreshToken, refreshTokenService.GetRefreshTokenExpirationDays()));
+                    return Results.Ok(new ResponseLogin(200, result.TokenResult.AccessToken, result.TokenResult.RefreshToken));
                 }
                 catch (UnauthorizedAccessException ex)
                 {
@@ -28,13 +29,13 @@ public static class AuthEndpoints
             .WithName("Login")
             .WithTags("Auth");
 
-        group.MapPost("/register", async (IAuthService authService, RequestRegister registerData) =>
+        group.MapPost("/register", async (IAuthService authService, IRefreshTokenService refreshTokenService, RequestRegister registerData) =>
             {
                 try
                 {
                     var result = await authService.RegisterAsync(registerData);
-                    return Results.Ok(new ResponseRegister(200, result.TokenResult.AccessToken,
-                        result.TokenResult.RefreshToken));
+                    await refreshTokenService.SaveRefreshTokenAsync(new RefreshTokenData(result.UserId, result.TokenResult.RefreshToken, refreshTokenService.GetRefreshTokenExpirationDays()));
+                    return Results.Ok(new ResponseRegister(200, result.TokenResult.AccessToken, result.TokenResult.RefreshToken));
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -47,27 +48,7 @@ public static class AuthEndpoints
             })
             .WithName("Register")
             .WithTags("Auth");
-
-        group.MapPost("/refresh", async (IAuthService authService, string token) =>
-            {
-                var newToken = await authService.RefreshTokenAsync(token);
-                return string.IsNullOrEmpty(newToken)
-                    ? Results.BadRequest(new ResponseError(400, "Invalid token"))
-                    : Results.Ok(new { Token = newToken });
-            })
-            .WithName("RefreshToken")
-            .WithTags("Auth");
-
-        group.MapPost("/revoke", async (IAuthService authService, string token) =>
-            {
-                var success = await authService.RevokeTokenAsync(token);
-                return success
-                    ? Results.Ok(new { status = 200, message = "Token revoked" })
-                    : Results.BadRequest(new ResponseError(400, "Token could not be revoked"));
-            })
-            .WithName("RevokeToken")
-            .WithTags("Auth");
-
+        
         return endpoints;
     }
 }

@@ -29,12 +29,12 @@ public class AuthService(
 
         var tokenResult = jwtTokenGenerator.GenerateToken(user);
         
-        return new LoginResult(tokenResult);
+        return new LoginResult(user.UserId ,tokenResult);
     }
     
     public async Task<RegisterResult> RegisterAsync(RequestRegister registerData)
     {
-        var existingUser = await context.UserAccounts.FirstOrDefaultAsync(u => u.Username == registerData.Username);
+        var existingUser = await context.UserAccounts.SingleOrDefaultAsync(u => u.Username == registerData.Username);
         
         if (existingUser != null)
         {
@@ -69,13 +69,15 @@ public class AuthService(
         return new RegisterResult(newUser.UserId, newUser.Username, tokenResult);
     }
 
-    public Task<string> RefreshTokenAsync(string token)
+    public async Task<TokenResult> RefreshTokenAsync(int userId)
     {
-        throw new NotImplementedException();
-    }
+        var user = await context.UserAccounts.SingleOrDefaultAsync(u => u.UserId == userId);
 
-    public Task<bool> RevokeTokenAsync(string token)
-    {
-        throw new NotImplementedException();
+        if (user == null)
+        {
+            throw new ArgumentException("Invalid user id");
+        }
+        
+        return jwtTokenGenerator.GenerateToken(user);
     }
 }

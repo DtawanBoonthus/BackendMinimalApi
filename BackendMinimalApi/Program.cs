@@ -10,13 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 
-await builder.Services.AddRedisConnectionAsync(builder.Configuration);
+builder.Services.AddStackExchangeRedis(builder.Configuration);
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AuthConnection")));
 
-builder.Services.AddScoped<IPasswordHasher<UserAccount>, BCryptPasswordHasher<UserAccount>>();
-builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddSingleton<IRefreshTokenService, RedisRefreshTokenService>();
+builder.Services.AddSingleton<IPasswordHasher<UserAccount>, BCryptPasswordHasher<UserAccount>>();
+builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddJwtBearerAuthentication(builder.Configuration);
@@ -47,5 +48,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAuth();
+app.MapToken();
+app.MapTestAuthorization();
 
 app.Run();
