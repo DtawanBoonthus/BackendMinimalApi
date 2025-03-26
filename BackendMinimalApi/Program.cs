@@ -30,6 +30,8 @@ builder.Services.AddNSwagOpenApiDocument();
 
 var app = builder.Build();
 
+app.MapGet("/", () => "Backend Minimal Api");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi();
